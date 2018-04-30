@@ -1,8 +1,15 @@
 package com.example.anacaroline.agenda.dao;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.anacaroline.agenda.modelo.Aluno;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlunoDAO extends SQLiteOpenHelper {
 
@@ -21,5 +28,41 @@ public class AlunoDAO extends SQLiteOpenHelper {
         String sql = "DROP TABLE IF EXISTS Alunos;";
         db.execSQL(sql);
         onCreate(db);
+    }
+
+    public void insere(Aluno aluno) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues dados = new ContentValues();
+
+        dados.put("nome", aluno.getNome());
+        dados.put("endereco", aluno.getEndereco());
+        dados.put("telefone", aluno.getTelefone());
+        dados.put("site", aluno.getSite());
+        dados.put("nota", aluno.getNota());
+
+        db.insert("Alunos", null, dados);
+    }
+
+    public List<Aluno> buscaAlunos() {
+        String sql = "SELECT * FROM Alunos;";
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor c = db.rawQuery(sql, null);
+        List<Aluno> listaAluno = new ArrayList<Aluno>();
+
+        while(c.moveToNext()){
+            Aluno aluno = new Aluno();
+
+            aluno.setId(c.getLong(c.getColumnIndex("id")));
+            aluno.setNome(c.getString(c.getColumnIndex("nome")));
+            aluno.setEndereco(c.getString(c.getColumnIndex("endereco")));
+            aluno.setTelefone(c.getString(c.getColumnIndex("telefone")));
+            aluno.setSite(c.getString(c.getColumnIndex("site")));
+            aluno.setNota(c.getDouble(c.getColumnIndex("nota")));
+
+            listaAluno.add(aluno);
+        }
+
+        return listaAluno;
     }
 }
