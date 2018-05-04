@@ -46,7 +46,23 @@ public class ListaAlunosActivity extends AppCompatActivity {
         String site = aluno.getSite();
 
         itemMenuSite(menu, site);
+        itemMenuSMS(menu, aluno);
+        itemMenuMapa(menu, aluno);
         itemMenuDeletar(menu, aluno);
+    }
+
+    private void itemMenuSMS(ContextMenu menu, Aluno aluno) {
+        MenuItem itemSms = menu.add("Enviar SMS");
+        Intent intentSms = new Intent(Intent.ACTION_VIEW);
+        intentSms.setData(Uri.parse("sms:" + aluno.getTelefone()));
+        itemSms.setIntent(intentSms);
+    }
+
+    private void itemMenuMapa(ContextMenu menu, Aluno aluno) {
+        MenuItem itemMapa = menu.add("Visualizar no mapa");
+        Intent intentMapa = new Intent(Intent.ACTION_VIEW);
+        intentMapa.setData(Uri.parse("geo:0,0?q=" + aluno.getEndereco()));
+        itemMapa.setIntent(intentMapa);
     }
 
     private void addNovoAluno() {
