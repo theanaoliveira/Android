@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.example.anacaroline.agenda.modelo.Aluno;
 
@@ -32,6 +33,13 @@ public class AlunoDAO extends SQLiteOpenHelper {
 
     public void insere(Aluno aluno) {
         SQLiteDatabase db = getWritableDatabase();
+        ContentValues dados = pegaDadosAluno(aluno);
+
+        db.insert("Alunos", null, dados);
+    }
+
+    @NonNull
+    private ContentValues pegaDadosAluno(Aluno aluno) {
         ContentValues dados = new ContentValues();
 
         dados.put("nome", aluno.getNome());
@@ -39,8 +47,7 @@ public class AlunoDAO extends SQLiteOpenHelper {
         dados.put("telefone", aluno.getTelefone());
         dados.put("site", aluno.getSite());
         dados.put("nota", aluno.getNota());
-
-        db.insert("Alunos", null, dados);
+        return dados;
     }
 
     public List<Aluno> buscaAlunos() {
@@ -71,5 +78,14 @@ public class AlunoDAO extends SQLiteOpenHelper {
 
         String [] params = {String.valueOf(aluno.getId())};
         db.delete("Alunos", "id = ?", params);
+    }
+
+    public void altera(Aluno aluno) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues dados = pegaDadosAluno(aluno);
+        String [] params = {String.valueOf(aluno.getId())};
+
+        db.update("Alunos", dados, "id = ?", params);
     }
 }
