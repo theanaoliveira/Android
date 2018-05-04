@@ -1,7 +1,11 @@
 package com.example.anacaroline.agenda;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -45,10 +49,42 @@ public class ListaAlunosActivity extends AppCompatActivity {
         final Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
         String site = aluno.getSite();
 
+        itemMenuLigar(menu, aluno);
         itemMenuSite(menu, site);
         itemMenuSMS(menu, aluno);
         itemMenuMapa(menu, aluno);
         itemMenuDeletar(menu, aluno);
+    }
+
+    private void itemMenuLigar(ContextMenu menu, final Aluno aluno) {
+        MenuItem itemLigar = menu.add("Ligar");
+
+        itemLigar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (ActivityCompat.checkSelfPermission(ListaAlunosActivity.this, Manifest.permission.CALL_PHONE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(ListaAlunosActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 123);
+                }
+
+                Intent intentLigar = new Intent(Intent.ACTION_CALL);
+                intentLigar.setData(Uri.parse("tel:" + aluno.getTelefone()));
+                startActivity(intentLigar);
+
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case 123:
+
+                break;
+        }
     }
 
     private void itemMenuSMS(ContextMenu menu, Aluno aluno) {
