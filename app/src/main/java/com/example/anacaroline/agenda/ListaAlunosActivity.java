@@ -1,6 +1,7 @@
 package com.example.anacaroline.agenda;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -10,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.anacaroline.agenda.dao.AlunoDAO;
 import com.example.anacaroline.agenda.modelo.Aluno;
@@ -28,6 +28,23 @@ public class ListaAlunosActivity extends AppCompatActivity {
 
         listaAlunos = (ListView) findViewById(R.id.lista_alunos);
 
+        clickListaAluno();
+        addNovoAluno();
+        registerForContextMenu(listaAlunos);
+    }
+
+    private void addNovoAluno() {
+        Button novoAluno = (Button) findViewById (R.id.novo_aluno);
+        novoAluno.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v)  {
+                Intent intentVaiProFormulario = new Intent (ListaAlunosActivity.this, FormularioActivity.class);
+                startActivity(intentVaiProFormulario);
+            }
+        });
+    }
+
+    private void clickListaAluno() {
         listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> lista, View item, int position, long id) {
@@ -38,17 +55,6 @@ public class ListaAlunosActivity extends AppCompatActivity {
                 startActivity(intentVaiProFormulario);
             }
         });
-
-        Button novoAluno = (Button) findViewById (R.id.novo_aluno);
-        novoAluno.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v)  {
-                Intent intentVaiProFormulario = new Intent (ListaAlunosActivity.this, FormularioActivity.class);
-                startActivity(intentVaiProFormulario);
-            }
-        });
-
-        registerForContextMenu(listaAlunos);
     }
 
     private void carregaLista() {
@@ -69,13 +75,19 @@ public class ListaAlunosActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, final ContextMenu.ContextMenuInfo menuInfo) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        final Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
+        String site = aluno.getSite();
+
+        itemMenuSite(menu, site);
+        itemMenuDeletar(menu, aluno);
+    }
+
+    private void itemMenuDeletar(ContextMenu menu, final Aluno aluno) {
         MenuItem deletar = menu.add("Deletar");
         deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-                Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
-
                 AlunoDAO dao = new AlunoDAO(ListaAlunosActivity.this);
                 dao.deleta(aluno);
                 dao.close();
@@ -85,5 +97,18 @@ public class ListaAlunosActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void itemMenuSite(ContextMenu menu, String site) {
+        if (site != "" && site != null){
+            MenuItem itemSite = menu.add("Visitar site");
+            Intent intentSite = new Intent(Intent.ACTION_VIEW);
+
+            if(!site.startsWith("http"))
+                site = "http://" + site;
+
+            intentSite.setData(Uri.parse(site));
+            itemSite.setIntent(intentSite);
+        }
     }
 }
