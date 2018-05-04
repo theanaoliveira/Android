@@ -33,6 +33,22 @@ public class ListaAlunosActivity extends AppCompatActivity {
         registerForContextMenu(listaAlunos);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carregaLista();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, final ContextMenu.ContextMenuInfo menuInfo) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        final Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
+        String site = aluno.getSite();
+
+        itemMenuSite(menu, site);
+        itemMenuDeletar(menu, aluno);
+    }
+
     private void addNovoAluno() {
         Button novoAluno = (Button) findViewById (R.id.novo_aluno);
         novoAluno.setOnClickListener(new View.OnClickListener() {
@@ -65,22 +81,6 @@ public class ListaAlunosActivity extends AppCompatActivity {
 
         ArrayAdapter<Aluno> adapter = new ArrayAdapter<Aluno>(this, android.R.layout.simple_list_item_1, listAlunos);
         listaAlunos.setAdapter(adapter);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        carregaLista();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, final ContextMenu.ContextMenuInfo menuInfo) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        final Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
-        String site = aluno.getSite();
-
-        itemMenuSite(menu, site);
-        itemMenuDeletar(menu, aluno);
     }
 
     private void itemMenuDeletar(ContextMenu menu, final Aluno aluno) {
