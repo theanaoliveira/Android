@@ -1,6 +1,8 @@
 package com.example.anacaroline.agenda;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +14,8 @@ import android.widget.Toast;
 
 import com.example.anacaroline.agenda.dao.AlunoDAO;
 import com.example.anacaroline.agenda.modelo.Aluno;
+
+import java.io.File;
 
 public class FormularioActivity extends AppCompatActivity {
 
@@ -30,7 +34,21 @@ public class FormularioActivity extends AppCompatActivity {
             helper.preencheFormulario(aluno);
         }
 
+        GetPhotoUser();
+    }
 
+    private void GetPhotoUser() {
+        Button botaoFoto = (Button) findViewById(R.id.formulario_botaoFoto);
+        botaoFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+               String caminhoFoto = getExternalFilesDir(null) + "/foto_"+ System.currentTimeMillis() +".png";
+               File arquivoFoto = new File(caminhoFoto);
+               intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(arquivoFoto));
+               startActivity(intentCamera);
+            }
+        });
     }
 
     @Override
