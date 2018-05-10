@@ -3,6 +3,8 @@ package com.example.anacaroline.agenda;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -13,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.anacaroline.agenda.dao.AlunoDAO;
@@ -23,6 +26,8 @@ import java.io.File;
 public class FormularioActivity extends AppCompatActivity {
 
     FormularioHelper helper;
+    public static final int CODIGO_CAMERA = 124;
+    private String caminhoFoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +51,13 @@ public class FormularioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-               String caminhoFoto = getExternalFilesDir(null) + "/foto_"+ System.currentTimeMillis() +".png";
+               caminhoFoto = getExternalFilesDir(null) + "/foto_"+ System.currentTimeMillis() +".png";
                File arquivoFoto = new File(caminhoFoto);
 
                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT,
                        FileProvider.getUriForFile(FormularioActivity.this,BuildConfig.APPLICATION_ID + ".provider", arquivoFoto));
 
-                //startActivityForResult(intentCamera, 124);
-                startActivity(intentCamera);
+               startActivityForResult(intentCamera, CODIGO_CAMERA);
             }
         });
     }
@@ -84,5 +88,16 @@ public class FormularioActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK){
+            switch (resultCode){
+                case CODIGO_CAMERA:
+                    helper.carregaImagem(caminhoFoto);
+                    break;
+            }
+        }
     }
 }
